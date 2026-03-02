@@ -1,0 +1,65 @@
+<?php
+$resultado = "";
+$erro = "";
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $a = filter_input(INPUT_POST, 'a', FILTER_VALIDATE_FLOAT);
+    $b = filter_input(INPUT_POST, 'b', FILTER_VALIDATE_FLOAT);
+    $operador = $_POST["operador"] ?? "";
+
+    if ($a === false || $b === false) {
+        $erro = "Por favor, insira números válidos.";
+    } else {
+        switch ($operador) {
+            case "soma":
+                $resultado = $a + $b;
+                break;
+            case "sub":
+                $resultado = $a - $b;
+                break;
+            case "multi":
+                $resultado = $a * $b;
+                break;
+            case "divide":
+                $resultado = ($b != 0) ? $a / $b : "Erro (divisão por zero)";
+                break;
+            default:
+                $erro = "Selecione uma operação.";
+        }
+    }
+}
+?>
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Minha Calculadora PHP</title>
+</head>
+<body>
+    <h1>Minha Calculadora!</h1>
+
+    <form method="POST" action="">
+        Valor A: <input type="number" step="any" name="a" required><br>
+        Valor B: <input type="number" step="any" name="b" required><br>
+        
+        <p>Operação:</p>
+        <input type="radio" name="operador" value="soma" checked> Soma<br>
+        <input type="radio" name="operador" value="sub"> Subtração<br>
+        <input type="radio" name="operador" value="multi"> Multiplicação<br>
+        <input type="radio" name="operador" value="divide"> Divisão<br>
+        
+        <br><input type="submit" value="Calcular">
+    </form>
+
+    <hr>
+
+    <?php if ($resultado !== ""): ?>
+        <h3>Resultado: <?php echo $resultado; ?></h3>
+    <?php elseif ($erro !== ""): ?>
+        <h3 style="color: red;"><?php echo $erro; ?></h3>
+    <?php endif; ?>
+
+</body>
+</html>
+
