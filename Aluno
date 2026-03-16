@@ -1,0 +1,28 @@
+<?php
+
+$host = "localhost";
+$user = "root";
+$pass = "";
+$banco = "escola";
+
+$conn = new mysqli($host, $user, $pass, $banco);
+
+if ($conn->connect_error) {
+    die("Erro de conexão: " . $conn->connect_error);
+}
+
+$matricula = $_POST['matricula'];
+$nome = $_POST['nome'];
+$email = $_POST['email'];
+
+$sql = "INSERT INTO alunos (matricula, nome, email)
+        VALUES ('$matricula', '$nome', '$email')";
+
+if ($conn->query($sql) === TRUE) {
+    echo "Aluno cadastrado com sucesso";
+} else {
+    echo "Erro: " . $conn->error;
+}
+
+$conn->close();
+?>
