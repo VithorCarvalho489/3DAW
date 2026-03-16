@@ -1,0 +1,30 @@
+<?php
+
+$host = "localhost";
+$user = "root";
+$pass = "";
+$banco = "escola";
+
+$conn = new mysqli($host, $user, $pass, $banco);
+
+if ($conn->connect_error) {
+    die("Erro de conexão: " . $conn->connect_error);
+}
+
+$matricula = $_POST['matricula'];
+$nome = $_POST['nome'];
+$email = $_POST['email'];
+
+$sql = "UPDATE alunos 
+        SET nome='$nome', email='$email'
+        WHERE matricula='$matricula'";
+
+if ($conn->query($sql) === TRUE) {
+    echo "Aluno alterado com sucesso";
+} else {
+    echo "Erro: " . $conn->error;
+}
+
+$conn->close();
+
+?>
