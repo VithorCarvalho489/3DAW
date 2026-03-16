@@ -16,12 +16,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             case "multi":  $resultado = $a * $b; break;
             case "divide": $resultado = ($b != 0) ? $a / $b : "Erro (divisão por zero)"; break;
             case "potencia":
-                $resultado = pow($a, $b); // Eleva A à potência B
+                $resultado = pow($a, $b); 
                 break;
             case "raiz":
-                $resultado = ($a >= 0) ? sqrt($a) : "Erro (número negativo)"; // Raiz quadrada de A
+                $resultado = ($a >= 0) ? sqrt($a) : "Erro (número negativo)";
                 break;
-            // -----------------------
+         
 
             default: $erro = "Selecione uma operação.";
         }
