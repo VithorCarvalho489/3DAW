@@ -7,24 +7,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $b = filter_input(INPUT_POST, 'b', FILTER_VALIDATE_FLOAT);
     $operador = $_POST["operador"] ?? "";
 
-    if ($a === false || $b === false) {
+    if ($a === false && $operador !== "raiz") { 
         $erro = "Por favor, insira números válidos.";
     } else {
         switch ($operador) {
-            case "soma":
-                $resultado = $a + $b;
+            case "soma":   $resultado = $a + $b; break;
+            case "sub":    $resultado = $a - $b; break;
+            case "multi":  $resultado = $a * $b; break;
+            case "divide": $resultado = ($b != 0) ? $a / $b : "Erro (divisão por zero)"; break;
+            case "potencia":
+                $resultado = pow($a, $b); // Eleva A à potência B
                 break;
-            case "sub":
-                $resultado = $a - $b;
+            case "raiz":
+                $resultado = ($a >= 0) ? sqrt($a) : "Erro (número negativo)"; // Raiz quadrada de A
                 break;
-            case "multi":
-                $resultado = $a * $b;
-                break;
-            case "divide":
-                $resultado = ($b != 0) ? $a / $b : "Erro (divisão por zero)";
-                break;
-            default:
-                $erro = "Selecione uma operação.";
+            // -----------------------
+
+            default: $erro = "Selecione uma operação.";
         }
     }
 }
@@ -40,14 +39,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <h1>Minha Calculadora!</h1>
 
     <form method="POST" action="">
-        Valor A: <input type="number" step="any" name="a" required><br>
-        Valor B: <input type="number" step="any" name="b" required><br>
+        Valor A (ou Número para Raiz): <input type="number" step="any" name="a" required><br>
+        Valor B (Expoente): <input type="number" step="any" name="b"><br>
         
         <p>Operação:</p>
         <input type="radio" name="operador" value="soma" checked> Soma<br>
         <input type="radio" name="operador" value="sub"> Subtração<br>
         <input type="radio" name="operador" value="multi"> Multiplicação<br>
         <input type="radio" name="operador" value="divide"> Divisão<br>
+        <input type="radio" name="operador" value="potencia"> Potenciação (A^B)<br>
+        <input type="radio" name="operador" value="raiz"> Raiz Quadrada (de A)<br>
         
         <br><input type="submit" value="Calcular">
     </form>
@@ -59,7 +60,5 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <?php elseif ($erro !== ""): ?>
         <h3 style="color: red;"><?php echo $erro; ?></h3>
     <?php endif; ?>
-
 </body>
 </html>
-
