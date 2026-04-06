@@ -1,0 +1,19 @@
+<?php
+$sigla = "ADS001";
+$nome  = "Algoritmos e Estrutura de Dados";
+$carga = "80";
+
+$linha = "{$sigla};{$nome};{$carga}" . PHP_EOL;
+
+$arquivo = "disciplina.txt";
+
+$handle = fopen($arquivo, "a");
+
+if ($handle) {
+    fwrite($handle, $linha);
+    fclose($handle);
+    echo "Disciplina '$nome' incluída com sucesso!";
+} else {
+    echo "Erro ao abrir o arquivo.";
+}
+?>
