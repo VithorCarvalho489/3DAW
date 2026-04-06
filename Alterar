@@ -1,30 +1,34 @@
 <?php
-
-$host = "localhost";
-$user = "root";
-$pass = "";
-$banco = "escola";
-
-$conn = new mysqli($host, $user, $pass, $banco);
-
-if ($conn->connect_error) {
-    die("Erro de conexão: " . $conn->connect_error);
-}
-
 $matricula = $_POST['matricula'];
 $nome = $_POST['nome'];
 $email = $_POST['email'];
 
-$sql = "UPDATE alunos 
-        SET nome='$nome', email='$email'
-        WHERE matricula='$matricula'";
+$arquivo = "aluno.txt";
+$encontrado = false;
+$novas_linhas = [];
 
-if ($conn->query($sql) === TRUE) {
-    echo "Aluno alterado com sucesso";
+if (file_exists($arquivo)) {
+    $linhas = file($arquivo);
+
+    foreach ($linhas as $linha) {
+        $dados = explode(";", trim($linha));
+
+        if ($dados[0] == $matricula) {
+            $novas_linhas[] = "{$matricula};{$nome};{$email}" . PHP_EOL;
+            $encontrado = true;
+        } else {
+            $novas_linhas[] = $linha;
+        }
+    }
+
+    file_put_contents($arquivo, implode("", $novas_linhas));
+
+    if ($encontrado) {
+        echo "Aluno alterado com sucesso no arquivo!";
+    } else {
+        echo "Matrícula não encontrada.";
+    }
 } else {
-    echo "Erro: " . $conn->error;
+    echo "Arquivo não encontrado.";
 }
-
-$conn->close();
-
 ?>
