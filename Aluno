@@ -1,28 +1,24 @@
 <?php
-
 $host = "localhost";
 $user = "root";
 $pass = "";
 $banco = "escola";
 
-$conn = new mysqli($host, $user, $pass, $banco);
-
-if ($conn->connect_error) {
-    die("Erro de conexão: " . $conn->connect_error);
-}
-
 $matricula = $_POST['matricula'];
 $nome = $_POST['nome'];
 $email = $_POST['email'];
 
-$sql = "INSERT INTO alunos (matricula, nome, email)
-        VALUES ('$matricula', '$nome', '$email')";
+$linha = "{$matricula};{$nome};{$email}" . PHP_EOL;
 
-if ($conn->query($sql) === TRUE) {
-    echo "Aluno cadastrado com sucesso";
+$arquivo = "aluno.txt";
+
+$handle = fopen($arquivo, "a");
+
+if ($handle) {
+    fwrite($handle, $linha);
+    fclose($handle);
+    echo "Aluno cadastrado com sucesso no arquivo!";
 } else {
-    echo "Erro: " . $conn->error;
+    echo "Erro ao abrir o arquivo para cadastro.";
 }
-
-$conn->close();
 ?>
