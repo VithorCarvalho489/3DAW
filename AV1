@@ -1,0 +1,16 @@
+<?php
+$arquivo = "usuarios.txt";
+$msg = "";
+ 
+if (!file_exists($arquivo)) {
+    $arq = fopen($arquivo, "w") or die("erro ao criar arquivo");
+    fwrite($arq, "nome;email;n");
+    fclose($arq);
+}
+ 
+                  // INCLUIR
+if (isset($_POST["acao"]) && $_POST["acao"] == "incluir") {
+    $nome  = $_POST["nome"];
+    $email = $_POST["email"];
+    
+ 
