@@ -12,5 +12,17 @@ if (!file_exists($arquivo)) {
 if (isset($_POST["acao"]) && $_POST["acao"] == "incluir") {
     $nome  = $_POST["nome"];
     $email = $_POST["email"];
-    
+
+    $arq = fopen($arquivo,"a") or die("erro ao abrir o arquivo");
+    fwrite($arq,$nome. ";" . $email. "\n");
+    fclose($arq);
+    $msg = "ok usuario cadastrado com sucesso";
+}
+
+                 //EDITAR
+
+
+
+
+
  
