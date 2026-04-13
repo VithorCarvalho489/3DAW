@@ -1,6 +1,8 @@
 <?php
 $arquivo = "usuarios.txt";
 $msg = "";
+
+//USUARIO
  
 if (!file_exists($arquivo)) {
     $arq = fopen($arquivo, "w") or die("erro ao criar arquivo");
@@ -20,6 +22,125 @@ if (isset($_POST["acao"]) && $_POST["acao"] == "incluir") {
 }
 
                  //EDITAR
+
+if (isset($_POST["acao"]) && $_POST["acao"] == "editar") {
+    $nomeOriginal = $_POST["nomeOriginal"];
+    $novoNome  = $_POST["nome"];
+    $novoEmail = $_POST["email"];
+    
+ 
+    $arq = fopen($arquivo, "r") or die("erro");
+    $conteudo = ""; $pl = true;
+    while (!feof($arq)) {
+        $linha = fgets($arq);
+        if ($pl) { $pl = false; $conteudo .= $linha; continue; }
+        $l = trim($linha); if ($l == "") continue;
+        $col = explode(";", $l);
+        if ($col[0] == $nomeOriginal)
+            $conteudo .= $novoNome . ";" . $novoEmail . ";" . $novoCargo . "\n";
+        else
+            $conteudo .= $linha;
+    }
+    fclose($arq);
+    $arq = fopen($arquivo, "w") or die("erro");
+    fwrite($arq, $conteudo);
+    fclose($arq);
+    $msg = "ok  Usuário atualizado com sucesso";
+}
+ 
+                        // EXCLUIR
+if (isset($_GET["acao"]) && $_GET["acao"] == "excluir") {
+    $nomeExcluir = $_GET["nome"];
+    $arq = fopen($arquivo, "r") or die("erro");
+    $conteudo = ""; $pl = true;
+    while (!feof($arq)) {
+        $linha = fgets($arq);
+        if ($pl) { $pl = false; $conteudo .= $linha; continue; }
+        $l = trim($linha); if ($l == "") continue;
+        $col = explode(";", $l);
+        if ($col[0] != $nomeExcluir) $conteudo .= $linha;
+    }
+    fclose($arq);
+    $arq = fopen($arquivo, "w") or die("erro");
+    fwrite($arq, $conteudo);
+    fclose($arq);
+    $msg = "ok  Usuário excluído com sucesso!";
+}
+
+
+        //PERGUNTA
+
+<?php
+
+$arquivo = "perguntas.txt";
+$msg = "";
+ 
+if (!file_exists($arquivo)) {
+    $arq = fopen($arquivo, "w") or die("erro ao criar arquivo");
+    fwrite($arq, "id;tipo;enunciado;opcaoA;opcaoB;opcaoC;opcaoD;gabarito\n");
+    fclose($arq);
+}
+ 
+                // próximo id
+function proximoId($arquivo) {
+    $arq = fopen($arquivo, "r"); $pl = true; $maxId = 0;
+    while (!feof($arq)) {
+        $linha = fgets($arq);
+        if ($pl) { $pl = false; continue; }
+        $l = trim($linha); if ($l == "") continue;
+        $col = explode(";", $l);
+        if ((int)$col[0] > $maxId) $maxId = (int)$col[0];
+    }
+    fclose($arq);
+    return $maxId + 1;
+}
+ 
+                // INCLUIR
+if (isset($_POST["acao"]) && $_POST["acao"] == "incluir_m") {
+    $id       = proximoId($arquivo);
+    $enunc    = $_POST["enunciado"];
+    $a        = $_POST["opcaoA"];
+    $b        = $_POST["opcaoB"];
+    $c        = $_POST["opcaoC"];
+    $d        = $_POST["opcaoD"];
+    $gabarito = $_POST["gabarito"];
+ 
+    $arq = fopen($arquivo, "a") or die("erro");
+    fwrite($arq, $id . ";M;" . $enunc . ";" . $a . ";" . $b . ";" . $c . ";" . $d . ";" . $gabarito . "\n");
+    fclose($arq);
+    $msg = " ";
+}
+ 
+                 // editar
+if (isset($_POST["acao"]) && $_POST["acao"] == "editar_m") {
+    $idEditar = $_POST["idOriginal"];
+    $enunc    = $_POST["enunciado"];
+    $a        = $_POST["opcaoA"];
+    $b        = $_POST["opcaoB"];
+    $c        = $_POST["opcaoC"];
+    $d        = $_POST["opcaoD"];
+    $gabarito = $_POST["gabarito"];
+ 
+    $arq = fopen($arquivo, "r") or die("erro");
+    $conteudo = ""; $pl = true;
+    while (!feof($arq)) {
+        $linha = fgets($arq);
+        if ($pl) { $pl = false; $conteudo .= $linha; continue; }
+        $l = trim($linha); if ($l == "") continue;
+        $col = explode(";", $l);
+        if ($col[0] == $idEditar && $col[1] == "M")
+            $conteudo .= $idEditar . ";M;" . $enunc . ";" . $a . ";" . $b . ";" . $c . ";" . $d . ";" . $gabarito . "\n";
+        else
+            $conteudo .= $linha;
+    }
+    fclose($arq);
+    $arq = fopen($arquivo, "w") or die("erro");
+    fwrite($arq, $conteudo);
+    fclose($arq);
+    $msg = " ";
+}
+
+
 
 
 
