@@ -37,7 +37,7 @@ if (isset($_POST["acao"]) && $_POST["acao"] == "editar") {
         $l = trim($linha); if ($l == "") continue;
         $col = explode(";", $l);
         if ($col[0] == $nomeOriginal)
-            $conteudo .= $novoNome . ";" . $novoEmail . ";" . $novoCargo . "\n";
+            $conteudo .= $novoNome . ";" . $novoEmail . ";" . "\n";
         else
             $conteudo .= $linha;
     }
