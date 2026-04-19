@@ -1,87 +1,20 @@
 <?php
-$arquivo = "usuarios.txt";
+
+$arquivoUsuarios  = "usuarios.txt";
+$arquivoPerguntas = "perguntas.txt";
 $msg = "";
 
-//USUARIO
- 
-if (!file_exists($arquivo)) {
-    $arq = fopen($arquivo, "w") or die("erro ao criar arquivo");
-    fwrite($arq, "nome;email;n");
+if (!file_exists($arquivoUsuarios)) {
+    $arq = fopen($arquivoUsuarios, "w") or die("erro ao criar arquivo");
+    fwrite($arq, "nome;email\n");
     fclose($arq);
 }
- 
-                  // INCLUIR
-if (isset($_POST["acao"]) && $_POST["acao"] == "incluir") {
-    $nome  = $_POST["nome"];
-    $email = $_POST["email"];
-
-    $arq = fopen($arquivo,"a") or die("erro ao abrir o arquivo");
-    fwrite($arq,$nome. ";" . $email. "\n");
-    fclose($arq);
-    $msg = "ok usuario cadastrado com sucesso";
-}
-
-                 //EDITAR
-
-if (isset($_POST["acao"]) && $_POST["acao"] == "editar") {
-    $nomeOriginal = $_POST["nomeOriginal"];
-    $novoNome  = $_POST["nome"];
-    $novoEmail = $_POST["email"];
-    
- 
-    $arq = fopen($arquivo, "r") or die("erro");
-    $conteudo = ""; $pl = true;
-    while (!feof($arq)) {
-        $linha = fgets($arq);
-        if ($pl) { $pl = false; $conteudo .= $linha; continue; }
-        $l = trim($linha); if ($l == "") continue;
-        $col = explode(";", $l);
-        if ($col[0] == $nomeOriginal)
-            $conteudo .= $novoNome . ";" . $novoEmail . ";" . "\n";
-        else
-            $conteudo .= $linha;
-    }
-    fclose($arq);
-    $arq = fopen($arquivo, "w") or die("erro");
-    fwrite($arq, $conteudo);
-    fclose($arq);
-    $msg = "ok  Usuário atualizado com sucesso";
-}
- 
-                        // EXCLUIR
-if (isset($_GET["acao"]) && $_GET["acao"] == "excluir") {
-    $nomeExcluir = $_GET["nome"];
-    $arq = fopen($arquivo, "r") or die("erro");
-    $conteudo = ""; $pl = true;
-    while (!feof($arq)) {
-        $linha = fgets($arq);
-        if ($pl) { $pl = false; $conteudo .= $linha; continue; }
-        $l = trim($linha); if ($l == "") continue;
-        $col = explode(";", $l);
-        if ($col[0] != $nomeExcluir) $conteudo .= $linha;
-    }
-    fclose($arq);
-    $arq = fopen($arquivo, "w") or die("erro");
-    fwrite($arq, $conteudo);
-    fclose($arq);
-    $msg = "ok  Usuário excluído com sucesso!";
-}
-
-
-        //PERGUNTA
-
-<?php
-
-$arquivo = "perguntas.txt";
-$msg = "";
- 
-if (!file_exists($arquivo)) {
-    $arq = fopen($arquivo, "w") or die("erro ao criar arquivo");
+if (!file_exists($arquivoPerguntas)) {
+    $arq = fopen($arquivoPerguntas, "w") or die("erro ao criar arquivo");
     fwrite($arq, "id;tipo;enunciado;opcaoA;opcaoB;opcaoC;opcaoD;gabarito\n");
     fclose($arq);
 }
- 
-                // próximo id
+
 function proximoId($arquivo) {
     $arq = fopen($arquivo, "r"); $pl = true; $maxId = 0;
     while (!feof($arq)) {
@@ -94,24 +27,77 @@ function proximoId($arquivo) {
     fclose($arq);
     return $maxId + 1;
 }
- 
-                // INCLUIR
+
+$tela = $_GET["tela"] ?? "menu";
+
+if (isset($_POST["acao"]) && $_POST["acao"] == "incluir") {
+    $nome  = $_POST["nome"];
+    $email = $_POST["email"];
+    $arq = fopen($arquivoUsuarios, "a") or die("erro ao abrir o arquivo");
+    fwrite($arq, $nome . ";" . $email . "\n");
+    fclose($arq);
+    $msg = "Usuario cadastrado com sucesso!";
+    $tela = "usuarios";
+}
+
+if (isset($_POST["acao"]) && $_POST["acao"] == "editar") {
+    $nomeOriginal = $_POST["nomeOriginal"];
+    $novoNome     = $_POST["nome"];
+    $novoEmail    = $_POST["email"];
+    $arq = fopen($arquivoUsuarios, "r") or die("erro");
+    $conteudo = ""; $pl = true;
+    while (!feof($arq)) {
+        $linha = fgets($arq);
+        if ($pl) { $pl = false; $conteudo .= $linha; continue; }
+        $l = trim($linha); if ($l == "") continue;
+        $col = explode(";", $l);
+        if ($col[0] == $nomeOriginal)
+            $conteudo .= $novoNome . ";" . $novoEmail . "\n";
+        else
+            $conteudo .= $linha;
+    }
+    fclose($arq);
+    $arq = fopen($arquivoUsuarios, "w") or die("erro");
+    fwrite($arq, $conteudo);
+    fclose($arq);
+    $msg = "Usuario atualizado com sucesso!";
+    $tela = "usuarios";
+}
+
+if (isset($_GET["acao"]) && $_GET["acao"] == "excluir_usuario") {
+    $nomeExcluir = $_GET["nome"];
+    $arq = fopen($arquivoUsuarios, "r") or die("erro");
+    $conteudo = ""; $pl = true;
+    while (!feof($arq)) {
+        $linha = fgets($arq);
+        if ($pl) { $pl = false; $conteudo .= $linha; continue; }
+        $l = trim($linha); if ($l == "") continue;
+        $col = explode(";", $l);
+        if ($col[0] != $nomeExcluir) $conteudo .= $linha;
+    }
+    fclose($arq);
+    $arq = fopen($arquivoUsuarios, "w") or die("erro");
+    fwrite($arq, $conteudo);
+    fclose($arq);
+    $msg = "Usuario excluido com sucesso!";
+    $tela = "usuarios";
+}
+
 if (isset($_POST["acao"]) && $_POST["acao"] == "incluir_m") {
-    $id       = proximoId($arquivo);
+    $id       = proximoId($arquivoPerguntas);
     $enunc    = $_POST["enunciado"];
     $a        = $_POST["opcaoA"];
     $b        = $_POST["opcaoB"];
     $c        = $_POST["opcaoC"];
     $d        = $_POST["opcaoD"];
     $gabarito = $_POST["gabarito"];
- 
-    $arq = fopen($arquivo, "a") or die("erro");
+    $arq = fopen($arquivoPerguntas, "a") or die("erro");
     fwrite($arq, $id . ";M;" . $enunc . ";" . $a . ";" . $b . ";" . $c . ";" . $d . ";" . $gabarito . "\n");
     fclose($arq);
-    $msg = " ";
+    $msg = "Pergunta de multipla escolha cadastrada! (ID: $id)";
+    $tela = "perguntas";
 }
- 
-                 // editar
+
 if (isset($_POST["acao"]) && $_POST["acao"] == "editar_m") {
     $idEditar = $_POST["idOriginal"];
     $enunc    = $_POST["enunciado"];
@@ -120,8 +106,7 @@ if (isset($_POST["acao"]) && $_POST["acao"] == "editar_m") {
     $c        = $_POST["opcaoC"];
     $d        = $_POST["opcaoD"];
     $gabarito = $_POST["gabarito"];
- 
-    $arq = fopen($arquivo, "r") or die("erro");
+    $arq = fopen($arquivoPerguntas, "r") or die("erro");
     $conteudo = ""; $pl = true;
     while (!feof($arq)) {
         $linha = fgets($arq);
@@ -134,16 +119,400 @@ if (isset($_POST["acao"]) && $_POST["acao"] == "editar_m") {
             $conteudo .= $linha;
     }
     fclose($arq);
-    $arq = fopen($arquivo, "w") or die("erro");
+    $arq = fopen($arquivoPerguntas, "w") or die("erro");
     fwrite($arq, $conteudo);
     fclose($arq);
-    $msg = " ";
+    $msg = "Pergunta atualizada com sucesso!";
+    $tela = "perguntas";
 }
 
+if (isset($_POST["acao"]) && $_POST["acao"] == "incluir_t") {
+    $id       = proximoId($arquivoPerguntas);
+    $enunc    = $_POST["enunciado"];
+    $gabarito = $_POST["gabarito"];
+    $arq = fopen($arquivoPerguntas, "a") or die("erro");
+    fwrite($arq, $id . ";T;" . $enunc . ";;;;" . $gabarito . "\n");
+    fclose($arq);
+    $msg = "Pergunta de texto cadastrada! (ID: $id)";
+    $tela = "perguntas";
+}
 
+if (isset($_POST["acao"]) && $_POST["acao"] == "editar_t") {
+    $idEditar = $_POST["idOriginal"];
+    $enunc    = $_POST["enunciado"];
+    $gabarito = $_POST["gabarito"];
+    $arq = fopen($arquivoPerguntas, "r") or die("erro");
+    $conteudo = ""; $pl = true;
+    while (!feof($arq)) {
+        $linha = fgets($arq);
+        if ($pl) { $pl = false; $conteudo .= $linha; continue; }
+        $l = trim($linha); if ($l == "") continue;
+        $col = explode(";", $l);
+        if ($col[0] == $idEditar && $col[1] == "T")
+            $conteudo .= $idEditar . ";T;" . $enunc . ";;;;" . $gabarito . "\n";
+        else
+            $conteudo .= $linha;
+    }
+    fclose($arq);
+    $arq = fopen($arquivoPerguntas, "w") or die("erro");
+    fwrite($arq, $conteudo);
+    fclose($arq);
+    $msg = "Pergunta atualizada com sucesso!";
+    $tela = "perguntas";
+}
 
+if (isset($_GET["acao"]) && $_GET["acao"] == "excluir_pergunta") {
+    $idExcluir = $_GET["id"];
+    $arq = fopen($arquivoPerguntas, "r") or die("erro");
+    $conteudo = ""; $pl = true;
+    while (!feof($arq)) {
+        $linha = fgets($arq);
+        if ($pl) { $pl = false; $conteudo .= $linha; continue; }
+        $l = trim($linha); if ($l == "") continue;
+        $col = explode(";", $l);
+        if ($col[0] != $idExcluir) $conteudo .= $linha;
+    }
+    fclose($arq);
+    $arq = fopen($arquivoPerguntas, "w") or die("erro");
+    fwrite($arq, $conteudo);
+    fclose($arq);
+    $msg = "Pergunta excluida com sucesso!";
+    $tela = "perguntas";
+}
 
+$usuarioEditar = null;
+if (isset($_GET["acao"]) && $_GET["acao"] == "editar_usuario") {
+    $arq = fopen($arquivoUsuarios, "r") or die("erro");
+    $pl = true;
+    while (!feof($arq)) {
+        $linha = fgets($arq);
+        if ($pl) { $pl = false; continue; }
+        $l = trim($linha); if ($l == "") continue;
+        $col = explode(";", $l);
+        if ($col[0] == $_GET["nome"]) $usuarioEditar = $col;
+    }
+    fclose($arq);
+    $tela = "usuarios";
+}
 
+$perguntaEditar = null;
+if (isset($_GET["acao"]) && ($_GET["acao"] == "editar_m" || $_GET["acao"] == "editar_t")) {
+    $arq = fopen($arquivoPerguntas, "r") or die("erro");
+    $pl = true;
+    while (!feof($arq)) {
+        $linha = fgets($arq);
+        if ($pl) { $pl = false; continue; }
+        $l = trim($linha); if ($l == "") continue;
+        $col = explode(";", $l);
+        if ($col[0] == $_GET["id"]) $perguntaEditar = $col;
+    }
+    fclose($arq);
+    $tela = "form_multipla";
+    if ($perguntaEditar && $perguntaEditar[1] == "T") $tela = "form_texto";
+}
 
+$perguntaVer = null;
+if (isset($_GET["acao"]) && $_GET["acao"] == "ver_pergunta") {
+    $arq = fopen($arquivoPerguntas, "r") or die("erro");
+    $pl = true;
+    while (!feof($arq)) {
+        $linha = fgets($arq);
+        if ($pl) { $pl = false; continue; }
+        $l = trim($linha); if ($l == "") continue;
+        $col = explode(";", $l);
+        if ($col[0] == $_GET["id"]) $perguntaVer = $col;
+    }
+    fclose($arq);
+    $tela = "ver_pergunta";
+}
 
- 
+$usuarios = [];
+$arq = fopen($arquivoUsuarios, "r") or die("erro");
+$pl = true;
+while (!feof($arq)) {
+    $linha = fgets($arq);
+    if ($pl) { $pl = false; continue; }
+    $l = trim($linha); if ($l == "") continue;
+    $usuarios[] = explode(";", $l);
+}
+fclose($arq);
+
+$perguntas = [];
+$arq = fopen($arquivoPerguntas, "r") or die("erro");
+$pl = true;
+while (!feof($arq)) {
+    $linha = fgets($arq);
+    if ($pl) { $pl = false; continue; }
+    $l = trim($linha); if ($l == "") continue;
+    $perguntas[] = explode(";", $l);
+}
+fclose($arq);
+?>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Water Falls Corp</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 30px; background: #f5f5f5; }
+        h1 { color: #2c3e50; }
+        h2 { color: #34495e; margin-bottom: 10px; }
+        nav { margin-bottom: 20px; }
+        nav a { margin-right: 12px; color: #2980b9; text-decoration: none; font-weight: bold; }
+        nav a:hover { text-decoration: underline; }
+        .caixa { background: #fff; padding: 20px; border: 1px solid #ddd; margin-bottom: 20px; }
+        label { display: block; margin-top: 10px; margin-bottom: 3px; }
+        input[type="text"], textarea, select { width: 300px; padding: 6px; font-size: 14px; }
+        textarea { width: 400px; height: 70px; }
+        input[type="submit"], .btn { padding: 7px 16px; background: #2980b9; color: white; border: none; cursor: pointer; text-decoration: none; font-size: 14px; }
+        input[type="submit"]:hover, .btn:hover { background: #1f6fa0; }
+        .btn-vermelho { background: #c0392b; }
+        .btn-vermelho:hover { background: #a93226; }
+        table { border-collapse: collapse; width: 100%; background: #fff; }
+        table th { background: #2c3e50; color: white; padding: 8px 12px; text-align: left; }
+        table td { padding: 8px 12px; border-bottom: 1px solid #ddd; }
+        table tr:hover td { background: #f0f0f0; }
+        .msg { color: green; font-weight: bold; margin-bottom: 12px; }
+        a.editar { color: #2980b9; margin-right: 8px; }
+        a.excluir { color: #c0392b; margin-right: 8px; }
+        a.ver { color: #27ae60; margin-right: 8px; }
+        .menu-links a { display: inline-block; margin: 6px 10px 6px 0; padding: 10px 18px; background: #2c3e50; color: white; text-decoration: none; }
+        .menu-links a:hover { background: #1a252f; }
+    </style>
+</head>
+<body>
+
+<h1>Water Falls Corp - Sistema de Treinamento Corporativo</h1>
+
+<nav>
+    <a href="waterfalls.php?tela=menu">Menu</a>
+    <a href="waterfalls.php?tela=usuarios">Usuarios</a>
+    <a href="waterfalls.php?tela=perguntas">Perguntas</a>
+    <a href="waterfalls.php?tela=form_multipla">Nova Multipla Escolha</a>
+    <a href="waterfalls.php?tela=form_texto">Nova Pergunta de Texto</a>
+</nav>
+
+<?php if ($msg != ""): ?>
+    <p class="msg"><?php echo $msg ?></p>
+<?php endif; ?>
+
+<?php if ($tela == "menu"): ?>
+
+    <h2>Menu Principal</h2>
+    <div class="menu-links">
+        <a href="waterfalls.php?tela=usuarios">Usuarios</a>
+        <a href="waterfalls.php?tela=perguntas">Listar Perguntas</a>
+        <a href="waterfalls.php?tela=form_multipla">Nova Multipla Escolha</a>
+        <a href="waterfalls.php?tela=form_texto">Nova Pergunta de Texto</a>
+    </div>
+
+<?php elseif ($tela == "usuarios"): ?>
+
+    <div class="caixa">
+        <?php if ($usuarioEditar): ?>
+            <h2>Editar Usuario</h2>
+            <form action="waterfalls.php" method="POST">
+                <input type="hidden" name="acao" value="editar">
+                <input type="hidden" name="nomeOriginal" value="<?php echo $usuarioEditar[0] ?>">
+                <label>Nome:</label>
+                <input type="text" name="nome" value="<?php echo $usuarioEditar[0] ?>">
+                <br>
+                <label>Email:</label>
+                <input type="text" name="email" value="<?php echo $usuarioEditar[1] ?>">
+                <br><br>
+                <input type="submit" value="Salvar Alteracoes">
+                <a href="waterfalls.php?tela=usuarios" class="btn" style="margin-left:8px">Cancelar</a>
+            </form>
+        <?php else: ?>
+            <h2>Cadastrar Usuario</h2>
+            <form action="waterfalls.php" method="POST">
+                <input type="hidden" name="acao" value="incluir">
+                <label>Nome:</label>
+                <input type="text" name="nome">
+                <br>
+                <label>Email:</label>
+                <input type="text" name="email">
+                <br><br>
+                <input type="submit" value="Cadastrar">
+            </form>
+        <?php endif; ?>
+    </div>
+
+    <div class="caixa">
+        <h2>Usuarios Cadastrados</h2>
+        <table>
+            <tr><th>Nome</th><th>Email</th><th>Acoes</th></tr>
+            <?php if (count($usuarios) == 0): ?>
+                <tr><td colspan="3">Nenhum usuario cadastrado.</td></tr>
+            <?php else: ?>
+                <?php foreach ($usuarios as $u): ?>
+                    <tr>
+                        <td><?php echo $u[0] ?></td>
+                        <td><?php echo $u[1] ?></td>
+                        <td>
+                            <a class="editar" href="waterfalls.php?tela=usuarios&acao=editar_usuario&nome=<?php echo urlencode($u[0]) ?>">Editar</a>
+                            <a class="excluir" href="waterfalls.php?tela=usuarios&acao=excluir_usuario&nome=<?php echo urlencode($u[0]) ?>" onclick="return confirm('Deseja excluir?')">Excluir</a>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            <?php endif; ?>
+        </table>
+    </div>
+
+<?php elseif ($tela == "perguntas"): ?>
+
+    <div class="caixa">
+        <h2>Listar Perguntas</h2>
+        <a href="waterfalls.php?tela=form_multipla" class="btn" style="margin-right:8px">+ Multipla Escolha</a>
+        <a href="waterfalls.php?tela=form_texto" class="btn">+ Texto</a>
+        <br><br>
+        <table>
+            <tr><th>ID</th><th>Tipo</th><th>Enunciado</th><th>Acoes</th></tr>
+            <?php if (count($perguntas) == 0): ?>
+                <tr><td colspan="4">Nenhuma pergunta cadastrada.</td></tr>
+            <?php else: ?>
+                <?php foreach ($perguntas as $p): ?>
+                    <tr>
+                        <td><?php echo $p[0] ?></td>
+                        <td><?php echo $p[1] == "M" ? "Multipla" : "Texto" ?></td>
+                        <td><?php echo htmlspecialchars($p[2]) ?></td>
+                        <td>
+                            <a class="ver" href="waterfalls.php?tela=perguntas&acao=ver_pergunta&id=<?php echo $p[0] ?>">Ver</a>
+                            <?php if ($p[1] == "M"): ?>
+                                <a class="editar" href="waterfalls.php?tela=perguntas&acao=editar_m&id=<?php echo $p[0] ?>">Editar</a>
+                            <?php else: ?>
+                                <a class="editar" href="waterfalls.php?tela=perguntas&acao=editar_t&id=<?php echo $p[0] ?>">Editar</a>
+                            <?php endif; ?>
+                            <a class="excluir" href="waterfalls.php?tela=perguntas&acao=excluir_pergunta&id=<?php echo $p[0] ?>" onclick="return confirm('Deseja excluir?')">Excluir</a>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            <?php endif; ?>
+        </table>
+    </div>
+
+<?php elseif ($tela == "ver_pergunta"): ?>
+
+    <?php if (!$perguntaVer): ?>
+        <p>Pergunta nao encontrada.</p>
+    <?php else: ?>
+        <div class="caixa">
+            <h2>Pergunta ID: <?php echo $perguntaVer[0] ?> - Tipo: <?php echo $perguntaVer[1] == "M" ? "Multipla Escolha" : "Texto" ?></h2>
+            <p><strong>Enunciado:</strong> <?php echo htmlspecialchars($perguntaVer[2]) ?></p>
+            <br>
+            <?php if ($perguntaVer[1] == "M"): ?>
+                <p><strong>A:</strong> <?php echo htmlspecialchars($perguntaVer[3]) ?></p>
+                <p><strong>B:</strong> <?php echo htmlspecialchars($perguntaVer[4]) ?></p>
+                <p><strong>C:</strong> <?php echo htmlspecialchars($perguntaVer[5]) ?></p>
+                <p><strong>D:</strong> <?php echo htmlspecialchars($perguntaVer[6]) ?></p>
+                <p><strong>Gabarito:</strong> <?php echo htmlspecialchars($perguntaVer[7]) ?></p>
+            <?php else: ?>
+                <p><strong>Resposta Esperada:</strong> <?php echo htmlspecialchars($perguntaVer[7]) ?></p>
+            <?php endif; ?>
+            <br>
+            <?php if ($perguntaVer[1] == "M"): ?>
+                <a href="waterfalls.php?tela=perguntas&acao=editar_m&id=<?php echo $perguntaVer[0] ?>" class="btn">Editar</a>
+            <?php else: ?>
+                <a href="waterfalls.php?tela=perguntas&acao=editar_t&id=<?php echo $perguntaVer[0] ?>" class="btn">Editar</a>
+            <?php endif; ?>
+            <a href="waterfalls.php?tela=perguntas&acao=excluir_pergunta&id=<?php echo $perguntaVer[0] ?>" class="btn btn-vermelho" onclick="return confirm('Deseja excluir?')" style="margin-left:8px">Excluir</a>
+            <a href="waterfalls.php?tela=perguntas" class="btn" style="margin-left:8px">Voltar</a>
+        </div>
+    <?php endif; ?>
+
+<?php elseif ($tela == "form_multipla"): ?>
+
+    <div class="caixa">
+        <?php if ($perguntaEditar && $perguntaEditar[1] == "M"): ?>
+            <h2>Editar Pergunta de Multipla Escolha (ID: <?php echo $perguntaEditar[0] ?>)</h2>
+            <form action="waterfalls.php" method="POST">
+                <input type="hidden" name="acao" value="editar_m">
+                <input type="hidden" name="idOriginal" value="<?php echo $perguntaEditar[0] ?>">
+                <label>Enunciado:</label>
+                <textarea name="enunciado"><?php echo htmlspecialchars($perguntaEditar[2]) ?></textarea>
+                <br>
+                <label>Opcao A:</label> <input type="text" name="opcaoA" value="<?php echo htmlspecialchars($perguntaEditar[3]) ?>">
+                <br>
+                <label>Opcao B:</label> <input type="text" name="opcaoB" value="<?php echo htmlspecialchars($perguntaEditar[4]) ?>">
+                <br>
+                <label>Opcao C:</label> <input type="text" name="opcaoC" value="<?php echo htmlspecialchars($perguntaEditar[5]) ?>">
+                <br>
+                <label>Opcao D:</label> <input type="text" name="opcaoD" value="<?php echo htmlspecialchars($perguntaEditar[6]) ?>">
+                <br>
+                <label>Gabarito:</label>
+                <select name="gabarito">
+                    <?php foreach (["A","B","C","D"] as $op): ?>
+                        <option value="<?php echo $op ?>" <?php echo trim($perguntaEditar[7])==$op?'selected':'' ?>><?php echo $op ?></option>
+                    <?php endforeach; ?>
+                </select>
+                <br><br>
+                <input type="submit" value="Salvar Alteracoes">
+                <a href="waterfalls.php?tela=perguntas" class="btn" style="margin-left:8px">Cancelar</a>
+            </form>
+        <?php else: ?>
+            <h2>Nova Pergunta de Multipla Escolha</h2>
+            <form action="waterfalls.php" method="POST">
+                <input type="hidden" name="acao" value="incluir_m">
+                <label>Enunciado:</label>
+                <textarea name="enunciado"></textarea>
+                <br>
+                <label>Opcao A:</label> <input type="text" name="opcaoA">
+                <br>
+                <label>Opcao B:</label> <input type="text" name="opcaoB">
+                <br>
+                <label>Opcao C:</label> <input type="text" name="opcaoC">
+                <br>
+                <label>Opcao D:</label> <input type="text" name="opcaoD">
+                <br>
+                <label>Gabarito:</label>
+                <select name="gabarito">
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="C">C</option>
+                    <option value="D">D</option>
+                </select>
+                <br><br>
+                <input type="submit" value="Cadastrar Pergunta">
+            </form>
+        <?php endif; ?>
+    </div>
+
+<?php elseif ($tela == "form_texto"): ?>
+
+    <div class="caixa">
+        <?php if ($perguntaEditar && $perguntaEditar[1] == "T"): ?>
+            <h2>Editar Pergunta de Texto (ID: <?php echo $perguntaEditar[0] ?>)</h2>
+            <form action="waterfalls.php" method="POST">
+                <input type="hidden" name="acao" value="editar_t">
+                <input type="hidden" name="idOriginal" value="<?php echo $perguntaEditar[0] ?>">
+                <label>Enunciado:</label>
+                <textarea name="enunciado"><?php echo htmlspecialchars($perguntaEditar[2]) ?></textarea>
+                <br>
+                <label>Resposta Esperada:</label>
+                <textarea name="gabarito"><?php echo htmlspecialchars($perguntaEditar[7]) ?></textarea>
+                <br><br>
+                <input type="submit" value="Salvar Alteracoes">
+                <a href="waterfalls.php?tela=perguntas" class="btn" style="margin-left:8px">Cancelar</a>
+            </form>
+        <?php else: ?>
+            <h2>Nova Pergunta de Texto</h2>
+            <form action="waterfalls.php" method="POST">
+                <input type="hidden" name="acao" value="incluir_t">
+                <label>Enunciado:</label>
+                <textarea name="enunciado"></textarea>
+                <br>
+                <label>Resposta Esperada:</label>
+                <textarea name="gabarito"></textarea>
+                <br><br>
+                <input type="submit" value="Cadastrar Pergunta">
+            </form>
+        <?php endif; ?>
+    </div>
+
+<?php endif; ?>
+
+<br>
+<p>Water Falls Corp &copy; <?php echo date("Y") ?></p>
+
+</body>
+</html>
